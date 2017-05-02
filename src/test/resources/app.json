@@ -1,5 +1,5 @@
 {
   "name": "test-elastic",
-  "elasticUrl": "http://127.0.0.1:29200",
+  "elasticUrl": "http://127.0.0.1:9200",
   "index": "test_index"
 }

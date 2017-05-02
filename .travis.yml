@@ -1,9 +1,6 @@
 services:
   - elasticsearch
 
-env:
-  - ELASTIC_URL="http://127.0.0.1:9200"
-
 language: java
 
 jdk:
