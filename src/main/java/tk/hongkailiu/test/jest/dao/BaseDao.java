@@ -2,11 +2,18 @@ package tk.hongkailiu.test.jest.dao;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
 import io.searchbox.client.JestClient;
+import io.searchbox.core.Index;
+import io.searchbox.core.Search;
+import io.searchbox.core.SearchResult;
 import io.searchbox.indices.CreateIndex;
 import io.searchbox.indices.aliases.GetAliases;
+
 import java.io.IOException;
+
 import lombok.extern.slf4j.Slf4j;
+import tk.hongkailiu.test.jest.config.Config;
 import tk.hongkailiu.test.jest.entity.BaseEntity;
 
 /**
@@ -16,12 +23,11 @@ import tk.hongkailiu.test.jest.entity.BaseEntity;
 public class BaseDao<T extends BaseEntity> {
 
   protected final JestClient client;
+  protected final Config config;
 
-  private Class<T> typeClass;
-
-  public BaseDao(JestClient client, Class<T> typeClass) {
+  public BaseDao(JestClient client, Config config) {
     this.client = client;
-    this.typeClass = typeClass;
+    this.config = config;
     try {
       createIndexIfNeeded();
     } catch (IOException e) {
@@ -32,7 +38,7 @@ public class BaseDao<T extends BaseEntity> {
   private void createIndexIfNeeded() throws IOException {
     GetAliases aliases = new GetAliases.Builder().build();
     JsonObject jsonObject = client.execute(aliases).getJsonObject();
-    String index = typeClass.getSimpleName().toLowerCase();
+    String index = config.getIndex();
     log.debug("index: " + index);
 
     JsonElement indexJsonElement = jsonObject.get(index);
@@ -45,7 +51,14 @@ public class BaseDao<T extends BaseEntity> {
 
   }
 
-  public void index() {
+  public void index(T t) throws IOException {
+    Index index =
+        new Index.Builder(t).index(config.getIndex()).type(t.getType())
+            .build();
+    client.execute(index);
+  }
 
+  public SearchResult search(Search search) throws IOException {
+    return client.execute(search);
   }
 }
