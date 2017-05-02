@@ -11,6 +11,7 @@ jdk:
 
 before_script:
   - sleep 10
+  - curl ${ELASTIC_URL}
 
 script:
   - ./gradlew check
