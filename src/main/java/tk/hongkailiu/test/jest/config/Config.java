@@ -10,6 +10,7 @@ import java.net.URL;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import tk.hongkailiu.test.jest.util.Helper;
 
 /**
  * Created by hongkailiu on 2017-05-01.
@@ -27,10 +28,15 @@ public class Config {
   private URL url;
 
 
-  public static Config load(String fileName)
+  public static Config load(String fileName, Helper helper)
       throws FileNotFoundException, MalformedURLException {
     Config config = new Gson()
         .fromJson(new JsonReader(new FileReader(fileName)), Config.class);
+    String elasticUrlFromHelper = helper.getElasticUrl();
+    if (elasticUrlFromHelper!=null) {
+      config.elasticUrl = elasticUrlFromHelper;
+    }
+    log.info("config.elasticUrl: " + config.elasticUrl);
     config.url = new URL(config.elasticUrl);
     return config;
   }

@@ -1,7 +1,5 @@
 package tk.hongkailiu.test.jest.module;
 
-import static org.junit.Assert.fail;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.inject.AbstractModule;
@@ -18,6 +16,7 @@ import java.net.MalformedURLException;
 import tk.hongkailiu.test.jest.config.Config;
 import tk.hongkailiu.test.jest.dao.ArticleDao;
 import tk.hongkailiu.test.jest.util.DateTimeTypeAdapter;
+import tk.hongkailiu.test.jest.util.Helper;
 
 /**
  * Created by hongkailiu on 2017-05-01.
@@ -32,13 +31,14 @@ public class TestModule extends AbstractModule {
   protected void configure() {
     bind(ArticleDao.class).in(Singleton.class);
     bind(RestHelper.class).in(Singleton.class);
+    bind(Helper.class).in(Singleton.class);
   }
 
   @Provides
   @Singleton
-  Config provideConfig() {
+  Config provideConfig(Helper helper) {
     try {
-      return Config.load(getClass().getClassLoader().getResource("app.json").getFile());
+      return Config.load(getClass().getClassLoader().getResource("app.json").getFile(), helper);
     } catch (FileNotFoundException | MalformedURLException e) {
       throw new RuntimeException(e.getMessage());
     }
