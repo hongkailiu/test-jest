@@ -8,6 +8,7 @@ import com.google.inject.Injector;
 
 import io.searchbox.client.JestResult;
 import io.searchbox.core.Get;
+import io.searchbox.core.Update;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.hamcrest.Matchers;
@@ -32,6 +33,16 @@ import tk.hongkailiu.test.jest.module.TestModule;
  * Created by hongkailiu on 2017-05-01.
  */
 public class ArticleDaoTest {
+
+  private static final String UPDATE_SCRIPT = "{\n"
+      + "\t\"script\": {\n"
+      + "\t\t\"inline\": \"ctx._source.content = params.content\",\n"
+      + "\t\t\"lang\": \"painless\",\n"
+      + "\t\t\"params\": {\n"
+      + "\t\t\t\"content\": \"new ccc\"\n"
+      + "\t\t}\n"
+      + "\t}\n"
+      + "}";
 
   private ArticleDao unitUnderTest;
   private RestHelper restHelper;
@@ -109,5 +120,23 @@ public class ArticleDaoTest {
     JestResult result = unitUnderTest.get(get);
     Article getArticle = result.getSourceAsObject(Article.class);
     assertThat(getArticle.getTitle()).isEqualTo(article.getTitle());
+  }
+
+  @Test
+  public void testUpdate() throws IOException, InterruptedException {
+    restHelper.indexDoc(config.getIndex(), article.getType(), article);
+    // https://www.elastic.co/guide/en/elasticsearch/guide/current/near-real-time.html
+    Thread.sleep(1 * 1000);
+    Update update = new Update.Builder(UPDATE_SCRIPT).index(config.getIndex()).type(article.getType()).id(article.getDocumentId()).build();
+
+    unitUnderTest.update(update);
+
+    Thread.sleep(1 * 1000);
+    ValidatableResponse response = restHelper.getAllDoc(config.getIndex());
+    response.assertThat().body("hits.total", Matchers.is(1))
+        .body("hits.hits._index", Matchers.hasItem(config.getIndex()))
+        .body("hits.hits._type", Matchers.hasItem(article.getType()))
+        .body("hits.hits._id", Matchers.hasItem(article.getDocumentId()))
+        .body("hits.hits._source.content", Matchers.hasItem("new ccc"));
   }
 }

@@ -9,6 +9,7 @@ import io.searchbox.core.Get;
 import io.searchbox.core.Index;
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
+import io.searchbox.core.Update;
 import io.searchbox.indices.CreateIndex;
 import io.searchbox.indices.aliases.GetAliases;
 
@@ -66,5 +67,9 @@ public class BaseDao<T extends BaseEntity> {
 
   public JestResult get(Get get) throws IOException {
     return client.execute(get);
+  }
+
+  public void update(Update update) throws IOException {
+    client.execute(update);
   }
 }
