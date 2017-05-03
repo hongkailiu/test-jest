@@ -4,6 +4,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import io.searchbox.client.JestClient;
+import io.searchbox.client.JestResult;
+import io.searchbox.core.Get;
 import io.searchbox.core.Index;
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
@@ -60,5 +62,9 @@ public class BaseDao<T extends BaseEntity> {
 
   public SearchResult search(Search search) throws IOException {
     return client.execute(search);
+  }
+
+  public JestResult get(Get get) throws IOException {
+    return client.execute(get);
   }
 }

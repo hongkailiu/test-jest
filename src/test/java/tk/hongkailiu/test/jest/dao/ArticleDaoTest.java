@@ -6,6 +6,8 @@ import static com.google.common.truth.Truth.assertThat;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
+import io.searchbox.client.JestResult;
+import io.searchbox.core.Get;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.hamcrest.Matchers;
@@ -94,5 +96,17 @@ public class ArticleDaoTest {
     assertThat(hits).hasSize(1);
     Article hitArticle = hits.get(0).source;
     assertThat(hitArticle.getTitle()).isEqualTo(article.getTitle());
+  }
+
+  @Test
+  public void testGet() throws IOException, InterruptedException {
+    restHelper.indexDoc(config.getIndex(), article.getType(), article);
+    // https://www.elastic.co/guide/en/elasticsearch/guide/current/near-real-time.html
+    Thread.sleep(1 * 1000);
+    Get get = new Get.Builder(config.getIndex(), article.getDocumentId()).type(article.getType()).build();
+
+    JestResult result = unitUnderTest.get(get);
+    Article getArticle = result.getSourceAsObject(Article.class);
+    assertThat(getArticle.getTitle()).isEqualTo(article.getTitle());
   }
 }
