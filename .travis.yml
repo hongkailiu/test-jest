@@ -1,17 +1,19 @@
-services:
-  - elasticsearch
-
 env:
-  - ELASTIC_URL="http://127.0.0.1:9200"
+  - ES_VERSION=5.3.2 ES_DOWNLOAD_URL=https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${ES_VERSION}.tar.gz
 
 language: java
 
 jdk:
   - oraclejdk8
 
+install:
+  - wget ${ES_DOWNLOAD_URL}
+  - tar -xzf elasticsearch-${ES_VERSION}.tar.gz
+  - ./elasticsearch-${ES_VERSION}/bin/elasticsearch &
+
 before_script:
   - sleep 10
-  - curl ${ELASTIC_URL}
+  - curl http://127.0.0.1:9200
 
 script:
   - ./gradlew check
