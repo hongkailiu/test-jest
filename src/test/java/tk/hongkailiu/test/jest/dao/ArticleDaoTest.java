@@ -74,7 +74,8 @@ public class ArticleDaoTest {
   }
 
   @Test
-  public void testConstructor() {
+  public void testConstructor() throws InterruptedException {
+    Thread.sleep(1 * 1000);
     restHelper.indexExists(config.getIndex());
   }
 

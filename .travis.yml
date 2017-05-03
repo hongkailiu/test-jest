@@ -12,7 +12,7 @@ install:
   - ./elasticsearch-${ES_VERSION}/bin/elasticsearch &
 
 before_script:
-  - sleep 15
+  - sleep 23
   - curl http://127.0.0.1:9200
 
 script:
