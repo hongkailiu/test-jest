@@ -5,6 +5,8 @@ import com.google.gson.JsonObject;
 
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestResult;
+import io.searchbox.core.Bulk;
+import io.searchbox.core.Delete;
 import io.searchbox.core.Get;
 import io.searchbox.core.Index;
 import io.searchbox.core.Search;
@@ -71,5 +73,13 @@ public class BaseDao<T extends BaseEntity> {
 
   public void update(Update update) throws IOException {
     client.execute(update);
+  }
+
+  public void delete(Delete delete) throws IOException {
+    client.execute(delete);
+  }
+
+  public void bulk(Bulk bulk) throws IOException {
+    client.execute(bulk);
   }
 }
