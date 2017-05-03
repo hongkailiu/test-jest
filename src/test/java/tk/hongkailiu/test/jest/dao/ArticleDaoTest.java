@@ -68,9 +68,10 @@ public class ArticleDaoTest {
   }
 
   @Test
-  public void testIndex() throws IOException {
+  public void testIndex() throws IOException, InterruptedException {
 
     unitUnderTest.index(article);
+    Thread.sleep(1 * 1000);
     ValidatableResponse response = restHelper.getAllDoc(config.getIndex());
     response.assertThat().body("hits.total", Matchers.is(1))
         .body("hits.hits._index", Matchers.hasItem(config.getIndex()))
